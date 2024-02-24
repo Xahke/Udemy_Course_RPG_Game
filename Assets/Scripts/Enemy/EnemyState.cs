@@ -26,7 +26,7 @@ public class EnemyState
     {
         triggerCalled = false;
         rb = enemyBase.rb;
-        player = GameObject.Find("Player").transform;
+        player = PlayerManager.instance.player.transform;
         enemyBase.anim.SetBool(animBoolName, true);
     }
     public virtual void Exit()

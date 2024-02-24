@@ -8,6 +8,7 @@ public class Player : Entity
 
     [Header("Attack info")]
     public Vector2[] attackMovement;
+    public float counterAttackDuration = .2f;
 
 
     [Header("Move info")]
@@ -17,8 +18,6 @@ public class Player : Entity
     [Header("Dash info")]
     public float dashSpeed;
     public float dashDuration;
-    public float dashTimer;
-    public float dashCooldown;
     public float dashDir {  get; private set; }
 
     #region States
@@ -31,6 +30,7 @@ public class Player : Entity
     public PlayerWallSlideState wallSlideState { get; private set; }
     public PlayerWallJumpState wallJumpState { get; private set; }
     public PlayerPrimaryAttackState primaryAttack { get; private set; }
+    public PlayerCounterAttackState counterAttack { get; private set; }
     #endregion
 
     protected override void Awake()
@@ -46,6 +46,7 @@ public class Player : Entity
         wallSlideState = new PlayerWallSlideState(this, stateMachine, "WallSlide");
         wallJumpState = new PlayerWallJumpState(this, stateMachine, "Jump");
         primaryAttack = new PlayerPrimaryAttackState(this, stateMachine, "Attack");
+        counterAttack = new PlayerCounterAttackState(this, stateMachine, "CounterAttack");
     }
 
     protected override void Start()
@@ -74,13 +75,10 @@ public class Player : Entity
         if (IsWallDetected())
             return;
 
-        dashTimer -= Time.deltaTime;
-
        
-        if(Input.GetKeyDown(KeyCode.LeftShift) && dashTimer<0)
+        if(Input.GetKeyDown(KeyCode.LeftShift) && SkillManager.instance.dash.CanUseSkill())
         {
             dashDir = Input.GetAxisRaw("Horizontal");
-            dashTimer = dashCooldown;
             if (dashDir == 0)
                 dashDir = facingDir;
 
